@@ -48,9 +48,9 @@ public class GroundEnemy : EnemyParent
     }
 
     [ContextMenu("take dmg")]
-    public override void TakeDamage()
+    public override void TakeDamage(float amount)
     {
-        health -= 10;
+        health -= amount;
 
         anim.SetBool("Take Damage", true);
 
@@ -62,14 +62,18 @@ public class GroundEnemy : EnemyParent
 
     public override void OnDeath()
     {
+        enemyCollider.enabled = false;
+
         anim.SetTrigger("Die");
         deathParticle.Play();
 
         ClassRefrencer.instance.gameManager.playerState.AddScore(scoreToGiveOnDeath);
         ClassRefrencer.instance.gameManager.playerState.AddFunds(fundsToGiveOnDeath);
-        ClassRefrencer.instance.waveManager.CheckCanAdvanceWave();
 
         ClassRefrencer.instance.enemyManager.allEnemiiesInGame.Remove(this);
+
+        ClassRefrencer.instance.waveManager.CheckCanAdvanceWave();
+
 
         moveSpeed = 0;
 

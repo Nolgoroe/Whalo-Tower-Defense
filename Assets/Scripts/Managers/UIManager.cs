@@ -8,13 +8,15 @@ public enum UIScreenTypes
     MainMenuScreen,
     InGameScreen,
     LoseScreen,
-    SystemMessages
+    SystemMessages,
 }
 
 public class UIManager : MonoBehaviour
 {
     public GameObject[] allScreensInGame; // used to reset all screens to false on start so that we don't accidentaly forget a screen as active.
 
+    public TowerDisplayData towerDisplayPrefab;
+    public GameObject tempShopRef;
 
     private Dictionary<UIScreenTypes, GameObject> screenTypeToObject;
 
@@ -44,6 +46,15 @@ public class UIManager : MonoBehaviour
             screenTypeToObject[type].SetActive(true);
         }
     }
+
+    public void DisplaySpecificScreensNoDeactivate(UIScreenTypes[] screens)
+    {
+        foreach (UIScreenTypes type in screens)
+        {
+            screenTypeToObject[type].SetActive(true);
+        }
+    }
+
     public void DeactivateSpecificScreens(UIScreenTypes[] screens)
     {
         foreach (UIScreenTypes type in screens)

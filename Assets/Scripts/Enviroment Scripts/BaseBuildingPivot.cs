@@ -10,6 +10,8 @@ public class BaseBuildingPivot : MonoBehaviour
     public Quaternion Rotation => transform.rotation;
     public Vector3 WorldPosition => transform.position;
 
+    public Sprite tempSprite;
+
     public void SetBuilding(BaseBuilding building)
     {
         if (CurrentBuilding != null)
@@ -36,9 +38,11 @@ public class BaseBuildingPivot : MonoBehaviour
         _placementIndicator.SetActive(true);
     }
 
-    private void OnDestroy()
+    private void OnMouseDown()
     {
-        CurrentBuilding = null;
+        Debug.Log("Clicked");
+        //sRefrencer.instance.UIManager.DisplaySpecificScreensNoDeactivate(new UIScreenTypes[] { UIScreenTypes.ShopMenu });
+        ClassRefrencer.instance.UIManager.tempShopRef.SetActive(true);
+        ClassRefrencer.instance.UIManager.towerDisplayPrefab.SetData("this name", "this cose", tempSprite, gameObject);
     }
-
 }

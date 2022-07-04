@@ -7,6 +7,8 @@ public class FlyingEnemy : EnemyParent
 
     public ParticleSystem deathParticle;
 
+    public Rigidbody rigidBody;
+
     private void Start()
     {
         if (path.Length > 0)
@@ -17,6 +19,8 @@ public class FlyingEnemy : EnemyParent
         {
             Debug.LogError("No path!");
         }
+
+        rigidBody = GetComponent<Rigidbody>();
     }
 
     private void Update()
@@ -49,11 +53,9 @@ public class FlyingEnemy : EnemyParent
     }
 
     [ContextMenu("take dmg")]
-    public override void TakeDamage()
+    public override void TakeDamage(float amount)
     {
-        health -= 200;
-
-        anim.SetBool("Take Damage", true);
+        health -= amount;
 
         if (!IsAlive)
         {
@@ -65,13 +67,18 @@ public class FlyingEnemy : EnemyParent
     {
         anim.SetTrigger("Die");
 
-        deathParticle.Play();
+        if (!deathParticle.isPlaying)
+        {
+            deathParticle.Play();
+        }
 
         ClassRefrencer.instance.gameManager.playerState.AddScore(scoreToGiveOnDeath);
         ClassRefrencer.instance.gameManager.playerState.AddFunds(fundsToGiveOnDeath);
-        ClassRefrencer.instance.waveManager.CheckCanAdvanceWave();
 
         ClassRefrencer.instance.enemyManager.allEnemiiesInGame.Remove(this);
+
+        ClassRefrencer.instance.waveManager.CheckCanAdvanceWave();
+
 
         moveSpeed = 0;
         //fall down to ground here

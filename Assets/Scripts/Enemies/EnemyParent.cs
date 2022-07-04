@@ -11,7 +11,7 @@ public abstract class EnemyParent: MonoBehaviour
 
     [Header("Enemy stats data")]
     public int moveSpeed;
-    public int health;
+    public float health;
     public int DamageToCore;
     public EnemyTypes typeOfEnemy;
 
@@ -22,6 +22,7 @@ public abstract class EnemyParent: MonoBehaviour
     [Header("Enemy components")]
     public Animator anim;
     public Transform hitPoint;
+    public Collider enemyCollider;
 
 
     public bool IsAlive => health > 0;
@@ -35,6 +36,7 @@ public abstract class EnemyParent: MonoBehaviour
         transform.localPosition = path[0];
 
         anim = GetComponent<Animator>();
+        enemyCollider = GetComponent<Collider>();
         return this;
     }
 
@@ -55,7 +57,7 @@ public abstract class EnemyParent: MonoBehaviour
         nextTargetPos = path[waypointIndex];
     }
 
-    public abstract void TakeDamage();
+    public abstract void TakeDamage(float amount);
     public abstract void OnDeath();
 
 }
