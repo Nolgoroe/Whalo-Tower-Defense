@@ -30,7 +30,7 @@ public class BulletParent : MonoBehaviour
         }
 
 
-        transform.Translate(bulletDir.normalized * moveSpeed * Board.boardSize * Time.deltaTime, Space.World);
+        transform.Translate(bulletDir.normalized * moveSpeed * Time.deltaTime, Space.World);
     }
 
 

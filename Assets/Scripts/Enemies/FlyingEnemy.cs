@@ -36,7 +36,7 @@ public class FlyingEnemy : EnemyParent
     {
         Vector3 moveDir = nextTargetPos - transform.localPosition;
 
-        transform.Translate(moveDir.normalized * moveSpeed * Board.boardSize * Time.deltaTime, Space.World);
+        transform.Translate(moveDir.normalized * moveSpeed * Time.deltaTime, Space.World);
 
         DoRotation(moveDir);
 

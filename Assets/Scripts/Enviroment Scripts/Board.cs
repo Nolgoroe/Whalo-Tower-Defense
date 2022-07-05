@@ -2,8 +2,6 @@
 
 public class Board : MonoBehaviour
 {
-    public const int boardSize = 18;
-
     [System.Serializable]
     public struct AirPath
     {

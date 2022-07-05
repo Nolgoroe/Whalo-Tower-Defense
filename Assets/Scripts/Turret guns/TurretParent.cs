@@ -57,7 +57,7 @@ public class TurretParent : MonoBehaviour
         }
 
 
-        if (closestEnemy != null && minimumDistanceToEnemy <= range * Board.boardSize)
+        if (closestEnemy != null && minimumDistanceToEnemy <= range)
         {
             target = closestEnemy.transform.GetComponent<EnemyParent>();
         }
@@ -82,7 +82,7 @@ public class TurretParent : MonoBehaviour
         {
             Debug.Log(hit.transform.name);
 
-            if (hit.transform == target.transform)
+            if (hit.transform == target.transform && hit.transform != transform)
             {
                 canShoot = true;
             }
@@ -102,9 +102,11 @@ public class TurretParent : MonoBehaviour
 
         Vector3 endRotationHead = Quaternion.Lerp(baseToRotate.transform.rotation, rotationCalcHead, rotationSpeed * Time.deltaTime).eulerAngles;
         Vector3 endRotationGuns = Quaternion.Lerp(gunsToRotate.transform.localRotation, rotationCalcGuns, rotationSpeed * Time.deltaTime).eulerAngles;
-
         baseToRotate.transform.rotation = Quaternion.Euler(0, endRotationHead.y, 0);
         gunsToRotate.transform.localRotation = Quaternion.Euler(endRotationGuns.x, 0, 0);
+
+        gunsToRotate.transform.localRotation = Quaternion.Euler(endRotationGuns.x, 0, 0);
+
     }
 
     private void Shoot()
@@ -123,7 +125,7 @@ public class TurretParent : MonoBehaviour
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, range * Board.boardSize);
+        Gizmos.DrawWireSphere(transform.position, range);
 
         Vector3 raycastDir = Vector3.zero;
 
