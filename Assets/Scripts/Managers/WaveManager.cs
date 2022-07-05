@@ -13,6 +13,7 @@ public class WaveManager : MonoBehaviour
     [Header("General wave data")]
     public int waveSpawnDelay;
     public int timeDelaySpawnEnemy;
+    public int waveNumAddFlyingEnemies;
 
     [Header("Ground enemies data")]
     public int groundEnemiesToSpawnThisWave;
@@ -26,11 +27,12 @@ public class WaveManager : MonoBehaviour
     public int flyingEnemyHealth;
     public bool hasFinishedSummoningFlying;
 
-    [Header("Data change between waves")]
+    [Header("Data change between waves Ground Enemis")]
     public int addAmountGroundEnemies;
     public int addSpeedGroundEnemies;
     public int addHealthGroundEnemies;
 
+    [Header("Data change between waves Flying Enemis")]
     public int addAmountFlyingEnemies;
     public int addSpeedFlyingEnemies;
     public int addHealthFlyingdEnemies;
@@ -46,13 +48,13 @@ public class WaveManager : MonoBehaviour
     {
         while (spawnDelay > 0)
         {
-            ClassRefrencer.instance.UIManager.DisplaySystemMessages();
-            ClassRefrencer.instance.announcementManager.UpdateText("Time till next wave: " + spawnDelay.ToString());
+            //ClassRefrencer.instance.UIManager.DisplaySystemMessages();
+            ClassRefrencer.instance.announcementManager.UpdateText("Time till next wave: " + spawnDelay.ToString(), ClassRefrencer.instance.announcementManager._generalText);
             yield return new WaitForSeconds(1);
             spawnDelay--;
         }
-        ClassRefrencer.instance.announcementManager.Show("Time till next wave: " + spawnDelay.ToString(), 0.4f);
 
+        ClassRefrencer.instance.announcementManager.Show("Time till next wave: " + spawnDelay.ToString(), 0.9f, ClassRefrencer.instance.announcementManager._generalText);
 
         StartCoroutine(SpawnWave(currentWaveID));
     }
@@ -154,7 +156,7 @@ public class WaveManager : MonoBehaviour
         currentWaveID++;
 
 
-        if(currentWaveID >= 2)
+        if(currentWaveID >= waveNumAddFlyingEnemies)
         {
             hasFinishedSummoningFlying = false;
 
@@ -170,8 +172,8 @@ public class WaveManager : MonoBehaviour
 
     private IEnumerator AdvanceToNextWave()
     {
-        ClassRefrencer.instance.UIManager.DisplaySystemMessages();
-        ClassRefrencer.instance.announcementManager.Show("Wave Ended!", 1);
+        //ClassRefrencer.instance.UIManager.DisplaySystemMessages();
+        ClassRefrencer.instance.announcementManager.Show("Wave Ended!", 1, ClassRefrencer.instance.announcementManager._generalText);
 
         yield return new WaitForSeconds(2);
 

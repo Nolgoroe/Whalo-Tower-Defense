@@ -6,9 +6,6 @@ public class BaseBuilding : MonoBehaviour
     private int _buildCost = 40;
 
     [SerializeField]
-    private int _sellPrice = 20;
-
-    [SerializeField]
     private string _name = null;
 
     [SerializeField]
@@ -19,8 +16,6 @@ public class BaseBuilding : MonoBehaviour
     public Sprite UIIcon => _uiIcon;
 
     public int BuildCost => _buildCost;
-
-    public int SellPrice => _sellPrice;
 
     public bool IsPlaced { get; protected set; }
 

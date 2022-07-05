@@ -5,11 +5,9 @@ using System.Collections.Generic;
 
 public class Announcement : MonoBehaviour
 {
-    [SerializeField]
-    private Text _text;
+    public Text _generalText;
 
-    [SerializeField]
-    private CanvasGroup _canvasGroup = null;
+    public Text _fundstext;
 
     [SerializeField]
     private AnimationCurve _alphaCurve = AnimationCurve.EaseInOut(0, 1, 1, 0);
@@ -17,30 +15,36 @@ public class Announcement : MonoBehaviour
     private float _remainingShowTime = 0;
     private float _totalShowTime = 0;
 
-    public void Show(string text, float duration)
+    public void Show(string text, float duration, Text _textObjectToShow)
     {
-        _text.text = text;
+        _textObjectToShow.text = text;
         _remainingShowTime = duration;
         _totalShowTime = duration;
+        _textObjectToShow.gameObject.SetActive(true);
 
-        StartCoroutine(DisplayTextFade());
+        StartCoroutine(DisplayTextFade(_textObjectToShow));
     }
 
-    public void UpdateText(string text)
+    public void UpdateText(string text, Text _textObjectToShow)
     {
-        _text.text = text;
-        _canvasGroup.alpha = 1;
+        _textObjectToShow.gameObject.SetActive(true);
+        _textObjectToShow.text = text;
+
+        _textObjectToShow.color = new Color(_textObjectToShow.color.r, _textObjectToShow.color.g, _textObjectToShow.color.b, 1);
     }
 
-    private IEnumerator DisplayTextFade()
+    private IEnumerator DisplayTextFade(Text _textObjectToShow)
     {
-        while (_remainingShowTime >= 0)
+        LeanTween.value(_textObjectToShow.gameObject, 1, 0, _totalShowTime).setEase(LeanTweenType.linear).setOnUpdate((float val) =>
         {
-            _remainingShowTime -= Time.deltaTime;
-            _canvasGroup.alpha = _alphaCurve.Evaluate(1 - (_remainingShowTime / _totalShowTime));
-            yield return new WaitForSeconds(Time.deltaTime);
-        }
+            Color newColor = _textObjectToShow.color;
+            newColor.a = val;
+            _textObjectToShow.color = newColor;
+        });
 
-        ClassRefrencer.instance.UIManager.DeactivateSpecificScreens(new UIScreenTypes[] { UIScreenTypes.SystemMessages });
+        yield return new WaitForSeconds(_totalShowTime);
+
+        _textObjectToShow.gameObject.SetActive(false);
+        //ClassRefrencer.instance.UIManager.DeactivateSpecificScreens(new UIScreenTypes[] { UIScreenTypes.SystemMessages });
     }
 }

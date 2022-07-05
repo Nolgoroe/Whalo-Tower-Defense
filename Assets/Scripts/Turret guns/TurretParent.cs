@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TurretParent : MonoBehaviour
+public abstract class TurretParent : MonoBehaviour
 {
     public EnemyParent target;
     public float range;
@@ -21,6 +21,10 @@ public class TurretParent : MonoBehaviour
     public bool canShoot = true;
 
     public LayerMask layerToHit;
+
+
+    public float maxAttackSpeed;
+    public float maxRange;
 
     // Start is called before the first frame update
     void Start()
@@ -80,7 +84,7 @@ public class TurretParent : MonoBehaviour
 
         if (Physics.Raycast(shootPivot.position, raycastDir, out hit, Mathf.Infinity, layerToHit))
         {
-            Debug.Log(hit.transform.name);
+            //Debug.Log(hit.transform.name);
 
             if (hit.transform == target.transform && hit.transform != transform)
             {
@@ -113,14 +117,17 @@ public class TurretParent : MonoBehaviour
     {
         if (target && canShoot)
         {
-            Debug.Log("Shooting!");
+            //Debug.Log("Shooting!");
             GameObject bulletObject = Instantiate(bulletPrefab, shootPivot.position, shootPivot.rotation);
             bulletObject.transform.SetParent(ParentReferencer.instance.bulletsParentTransform);
 
             BulletParent summonedBullet = bulletObject.GetComponent<BulletParent>();
             summonedBullet.SetTarget(target.hitPoint.transform);
+            summonedBullet.AddPowerUpValues();
         }
     }
+
+    public abstract void AddPowerUpValues();
 
     private void OnDrawGizmosSelected()
     {

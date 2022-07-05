@@ -10274,6 +10274,7 @@ MonoBehaviour:
   moveSpeed: 7
   damageToEnemy: 20
   bulletDir: {x: 0, y: 0, z: 0}
+  maxMoveSpeed: 15
 --- !u!136 &1702541272664046365
 CapsuleCollider:
   m_ObjectHideFlags: 0

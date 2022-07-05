@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BulletParent : MonoBehaviour
+public abstract class BulletParent : MonoBehaviour
 {
     public Transform targetAttack;
     public float moveSpeed;
@@ -10,9 +10,11 @@ public class BulletParent : MonoBehaviour
 
     public Vector3 bulletDir;
 
+    public float maxMoveSpeed;
+
     private void Start()
     {
-        Destroy(gameObject, 4f);
+        Destroy(gameObject, 10f);
     }
     public void SetTarget(Transform _targetToAttack)
     {
@@ -44,4 +46,7 @@ public class BulletParent : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
+
+    public abstract void AddPowerUpValues();
 }

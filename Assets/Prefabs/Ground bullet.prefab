@@ -112,3 +112,4 @@ MonoBehaviour:
   moveSpeed: 20
   damageToEnemy: 10
   bulletDir: {x: 0, y: 0, z: 0}
+  maxMoveSpeed: 20

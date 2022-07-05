@@ -48,7 +48,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  range: 6
+  range: 4
   rotationSpeed: 100
   baseToRotate: {fileID: 7662552722322254575}
   gunsToRotate: {fileID: 9074278832843545792}
@@ -60,6 +60,8 @@ MonoBehaviour:
   layerToHit:
     serializedVersion: 2
     m_Bits: 192
+  maxAttackSpeed: 0.1
+  maxRange: 10
 --- !u!114 &1806581603745262825
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -73,7 +75,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _buildCost: 40
-  _sellPrice: 20
   _name: Ground
   _uiIcon: {fileID: 21300000, guid: cedba707fdb81914db2871c2f92776ef, type: 3}
 --- !u!65 &6999117333196493148

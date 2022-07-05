@@ -18,10 +18,11 @@ public class BaseBuildingPivot : MonoBehaviour
             Debug.LogError("Current building already set, cannot add another building to pivot", gameObject);
             return;
         }
-        _placementIndicator.SetActive(false);
-        CurrentBuilding = building;
-        CurrentBuilding.SetParentPivot(transform);
-        CurrentBuilding.OnPlacement();
+
+            _placementIndicator.SetActive(false);
+            CurrentBuilding = building;
+            CurrentBuilding.SetParentPivot(transform);
+            CurrentBuilding.OnPlacement();
     }
 
     public void RemoveBuilding()
@@ -37,19 +38,27 @@ public class BaseBuildingPivot : MonoBehaviour
         _placementIndicator.SetActive(true);
     }
 
-    private void OnMouseUp()
+    public void OnChosenPivot()
     {
-        Debug.Log("Clicked");
+        ClassRefrencer.instance.buildManager.buildingPivotClicked = this;
 
         if (CurrentBuilding)
         {
-            Debug.Log("need to sell here");
+            ClassRefrencer.instance.UIManager.tempSellRef.gameObject.SetActive(true);
+
+            ClassRefrencer.instance.UIManager.SetShopSellPos(transform);
         }
         else
         {
-            ClassRefrencer.instance.UIManager.tempShopRef.SetActive(true);
+            ClassRefrencer.instance.UIManager.tempShopRef.gameObject.SetActive(true);
 
-            ClassRefrencer.instance.buildManager.PopulateTowerDisplays(this);
+            ClassRefrencer.instance.buildManager.PopulateTowerDisplays();
         }
+
+    }
+
+    private void OnMouseEnter()
+    {
+        //change color here
     }
 }

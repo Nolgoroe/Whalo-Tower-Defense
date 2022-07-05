@@ -83,6 +83,8 @@ public class FlyingEnemy : EnemyParent
         moveSpeed = 0;
         //fall down to ground here
 
+        rigidBody.useGravity = true;
+
         Destroy(gameObject, 1.2f);
         Debug.LogError("DEAD!");
     }

@@ -13,6 +13,7 @@ public class ClassRefrencer : MonoBehaviour
     public EnemyManager enemyManager;
     public Board boardManager;
     public BuildManager buildManager;
+    public PowerUpManager powerupManager;
 
     private void Awake()
     {

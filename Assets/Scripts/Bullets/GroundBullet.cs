@@ -4,5 +4,8 @@ using UnityEngine;
 
 public class GroundBullet : BulletParent
 {
-
+    public override void AddPowerUpValues()
+    {
+        damageToEnemy += ClassRefrencer.instance.powerupManager.groundDMGModifier;
+    }
 }
