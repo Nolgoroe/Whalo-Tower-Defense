@@ -17,28 +17,41 @@ public class TurretParent : MonoBehaviour
     public Transform shootPivot;
 
     public EnemyTypes typeToAttack;
+
+    public bool canShoot = true;
+
+    public LayerMask layerToHit;
+
     // Start is called before the first frame update
     void Start()
     {
-        InvokeRepeating(nameof(LookForTarget), 0, 0.5f);
+        InvokeRepeating(nameof(CallLookingForTarget), 0, 0.5f);
         InvokeRepeating(nameof(Shoot), 0, attackSpeed);
     }
 
-    private void LookForTarget()
+    private void CallLookingForTarget()
+    {
+        LookForTarget(null);
+    }
+
+    private void LookForTarget(EnemyParent toIgnore)
     {
         float minimumDistanceToEnemy = Mathf.Infinity;
         GameObject closestEnemy = null;
 
         foreach (EnemyParent enemy in ClassRefrencer.instance.enemyManager.allEnemiiesInGame)
         {
-            if (enemy.typeOfEnemy == typeToAttack)
+            if(enemy != toIgnore)
             {
-                float enemyDistance = Vector3.Distance(transform.position, enemy.transform.position);
-
-                if (enemyDistance < minimumDistanceToEnemy)
+                if (enemy.typeOfEnemy == typeToAttack)
                 {
-                    minimumDistanceToEnemy = enemyDistance;
-                    closestEnemy = enemy.gameObject;
+                    float enemyDistance = Vector3.Distance(transform.position, enemy.transform.position);
+
+                    if (enemyDistance < minimumDistanceToEnemy)
+                    {
+                        minimumDistanceToEnemy = enemyDistance;
+                        closestEnemy = enemy.gameObject;
+                    }
                 }
             }
         }
@@ -61,6 +74,26 @@ public class TurretParent : MonoBehaviour
             return;
         }
 
+        RaycastHit hit;
+
+        Vector3 raycastDir = target.hitPoint.position - shootPivot.position;
+
+        if (Physics.Raycast(shootPivot.position, raycastDir, out hit, Mathf.Infinity, layerToHit))
+        {
+            Debug.Log(hit.transform.name);
+
+            if (hit.transform == target.transform)
+            {
+                canShoot = true;
+            }
+            else
+            {
+                canShoot = false;
+                LookForTarget(target);
+                return;
+            }
+        }
+
         Vector3 enemyDirHead = target.hitPoint.position - baseToRotate.transform.position;
         Vector3 enemyDirGuns = target.hitPoint.position - gunsToRotate.transform.position;
 
@@ -72,13 +105,11 @@ public class TurretParent : MonoBehaviour
 
         baseToRotate.transform.rotation = Quaternion.Euler(0, endRotationHead.y, 0);
         gunsToRotate.transform.localRotation = Quaternion.Euler(endRotationGuns.x, 0, 0);
-
-
     }
 
     private void Shoot()
     {
-        if (target)
+        if (target && canShoot)
         {
             Debug.Log("Shooting!");
             GameObject bulletObject = Instantiate(bulletPrefab, shootPivot.position, shootPivot.rotation);
@@ -93,5 +124,14 @@ public class TurretParent : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, range * Board.boardSize);
+
+        Vector3 raycastDir = Vector3.zero;
+
+        if (target)
+        {
+            raycastDir = target.hitPoint.position - shootPivot.position;
+        }
+
+        Gizmos.DrawRay(shootPivot.position, raycastDir * 100);
     }
 }

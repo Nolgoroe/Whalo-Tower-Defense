@@ -15,7 +15,6 @@ public class UIManager : MonoBehaviour
 {
     public GameObject[] allScreensInGame; // used to reset all screens to false on start so that we don't accidentaly forget a screen as active.
 
-    public TowerDisplayData towerDisplayPrefab;
     public GameObject tempShopRef;
 
     private Dictionary<UIScreenTypes, GameObject> screenTypeToObject;

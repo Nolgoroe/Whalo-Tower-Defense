@@ -443,7 +443,7 @@ GameObject:
   - component: {fileID: 2143651184102914896}
   - component: {fileID: 1260405006519853246}
   - component: {fileID: 5510899455983417121}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Toon Chicken
   m_TagString: Enemy
   m_Icon: {fileID: 0}

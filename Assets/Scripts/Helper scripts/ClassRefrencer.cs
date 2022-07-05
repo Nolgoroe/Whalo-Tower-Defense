@@ -12,6 +12,7 @@ public class ClassRefrencer : MonoBehaviour
     public WaveManager waveManager;
     public EnemyManager enemyManager;
     public Board boardManager;
+    public BuildManager buildManager;
 
     private void Awake()
     {

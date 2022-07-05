@@ -8,6 +8,8 @@ public class ParentReferencer : MonoBehaviour
 
     public Transform enemiesParentTransform;
     public Transform bulletsParentTransform;
+    public Transform towerDisplayDataParent;
+
     void Start()
     {
         if(instance == null)

@@ -14,7 +14,7 @@ public class BaseBuilding : MonoBehaviour
     [SerializeField]
     private Sprite _uiIcon = null;
 
-    public string Name => _name;
+    public string towerName => _name;
 
     public Sprite UIIcon => _uiIcon;
 

@@ -5,12 +5,11 @@ public class BaseBuildingPivot : MonoBehaviour
     [SerializeField]
     private GameObject _placementIndicator = null;
 
-    public BaseBuilding CurrentBuilding { get; private set; }
+    //public BaseBuilding CurrentBuilding { get; private set; }
+    public BaseBuilding CurrentBuilding;
 
     public Quaternion Rotation => transform.rotation;
     public Vector3 WorldPosition => transform.position;
-
-    public Sprite tempSprite;
 
     public void SetBuilding(BaseBuilding building)
     {
@@ -38,11 +37,19 @@ public class BaseBuildingPivot : MonoBehaviour
         _placementIndicator.SetActive(true);
     }
 
-    private void OnMouseDown()
+    private void OnMouseUp()
     {
         Debug.Log("Clicked");
-        //sRefrencer.instance.UIManager.DisplaySpecificScreensNoDeactivate(new UIScreenTypes[] { UIScreenTypes.ShopMenu });
-        ClassRefrencer.instance.UIManager.tempShopRef.SetActive(true);
-        ClassRefrencer.instance.UIManager.towerDisplayPrefab.SetData("this name", "this cose", tempSprite, gameObject);
+
+        if (CurrentBuilding)
+        {
+            Debug.Log("need to sell here");
+        }
+        else
+        {
+            ClassRefrencer.instance.UIManager.tempShopRef.SetActive(true);
+
+            ClassRefrencer.instance.buildManager.PopulateTowerDisplays(this);
+        }
     }
 }

@@ -213,7 +213,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -282,10 +282,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05dab2de79cac99408b1543f76f53f97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  indexInAllTowersArray: 0
   towerNameText: {fileID: 5788746814175913327}
   towerCostText: {fileID: 2990438223650544451}
   towerImage: {fileID: 5687998610030753345}
   targetOffset: {x: 0, y: 180, z: 0}
+  towerPrefab: {fileID: 0}
+  connectedButton: {fileID: 4900824998322781444}
 --- !u!114 &4900824998322781444
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -326,7 +329,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 0}
+  m_TargetGraphic: {fileID: 2738731544235009203}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
