@@ -5,47 +5,75 @@ using UnityEngine;
 
 public abstract class TurretParent : MonoBehaviour
 {
-    public EnemyParent target;
-    public float range;
-    public float rotationSpeed;
+    [Header("Stats")]
+    [SerializeField] internal float range;
+    [SerializeField] internal float maxRange;
+    [SerializeField] internal float rotationSpeed;
+    [SerializeField] internal float attackSpeed;
+    [SerializeField] internal float maxAttackSpeed;
 
-    public GameObject baseToRotate;
-    public GameObject gunsToRotate;
+    [SerializeField] internal EnemyTypes typeToAttack;
 
-    public float attackSpeed;
-    public GameObject bulletPrefab;
-    public Transform shootPivot;
+    [Header("Parts")]
+    [SerializeField] internal GameObject baseToRotate;
+    [SerializeField] internal GameObject gunsToRotate;
+    [SerializeField] internal Transform shootPivot;
 
-    public EnemyTypes typeToAttack;
+    [Header("Shoot data")]
+    [SerializeField] internal GameObject bulletPrefab;
+    [SerializeField] internal string bulletObjectTag;
+    [SerializeField] internal bool canShoot = true;
+    [SerializeField] internal LayerMask layerToHit;
 
-    public bool canShoot = true;
+    [Header("Debugging data")]
+    [SerializeField] internal EnemyParent target;
 
-    public LayerMask layerToHit;
+    #region public functions
 
+    public abstract void AddPowerUpValues();
 
-    public float maxAttackSpeed;
-    public float maxRange;
+    #endregion
 
-    // Start is called before the first frame update
-    void Start()
+    #region private functions
+    private void Start()
     {
-        InvokeRepeating(nameof(CallLookingForTarget), 0, 0.5f);
-        InvokeRepeating(nameof(Shoot), 0, attackSpeed);
+        StartCoroutine(CallLookingForTarget());
+        StartCoroutine(Shoot());
+        bulletObjectTag = bulletPrefab.transform.tag;
+    }
+    private IEnumerator Shoot()
+    {
+        while (GameManager.gameRunning)
+        {
+            yield return new WaitForSeconds(attackSpeed);
+
+            if (target && canShoot)
+            {
+                GameObject bulletObject = ClassRefrencer.instance.objectPoolingManager.GetFromPool(bulletObjectTag, shootPivot.position, shootPivot.rotation);
+
+                BulletParent summonedBullet = bulletObject.GetComponent<BulletParent>();
+                summonedBullet.SetTarget(target.hitPoint.transform);
+                summonedBullet.AddPowerUpValues();
+            }
+        }
     }
 
-    private void CallLookingForTarget()
+    private IEnumerator CallLookingForTarget()
     {
-        LookForTarget(null);
+        while (GameManager.gameRunning)
+        {
+            yield return new WaitForSeconds(0.5f);
+            LookForTarget(null);
+        }
     }
-
     private void LookForTarget(EnemyParent toIgnore)
     {
         float minimumDistanceToEnemy = Mathf.Infinity;
         GameObject closestEnemy = null;
 
-        foreach (EnemyParent enemy in ClassRefrencer.instance.enemyManager.allEnemiiesInGame)
+        foreach (EnemyParent enemy in ClassRefrencer.instance.enemyManager.allEnemiesSpawned)
         {
-            if(enemy != toIgnore)
+            if (enemy != toIgnore)
             {
                 if (enemy.typeOfEnemy == typeToAttack)
                 {
@@ -60,7 +88,6 @@ public abstract class TurretParent : MonoBehaviour
             }
         }
 
-
         if (closestEnemy != null && minimumDistanceToEnemy <= range)
         {
             target = closestEnemy.transform.GetComponent<EnemyParent>();
@@ -70,7 +97,6 @@ public abstract class TurretParent : MonoBehaviour
             target = null;
         }
     }
-
     private void Update()
     {
         if (target == null)
@@ -84,11 +110,18 @@ public abstract class TurretParent : MonoBehaviour
 
         if (Physics.Raycast(shootPivot.position, raycastDir, out hit, Mathf.Infinity, layerToHit))
         {
-            //Debug.Log(hit.transform.name);
-
             if (hit.transform == target.transform && hit.transform != transform)
             {
-                canShoot = true;
+                Vector3 raycastDirToShoot = shootPivot.transform.forward * 100 - shootPivot.position;
+
+                if (Physics.Raycast(shootPivot.position, raycastDirToShoot, out hit, Mathf.Infinity, layerToHit))
+                {
+                    canShoot = true;
+                }
+                else
+                {
+                    canShoot = false;
+                }
             }
             else
             {
@@ -104,8 +137,8 @@ public abstract class TurretParent : MonoBehaviour
         Quaternion rotationCalcHead = Quaternion.LookRotation(enemyDirHead);
         Quaternion rotationCalcGuns = Quaternion.LookRotation(enemyDirGuns);
 
-        Vector3 endRotationHead = Quaternion.Lerp(baseToRotate.transform.rotation, rotationCalcHead, rotationSpeed * Time.deltaTime).eulerAngles;
-        Vector3 endRotationGuns = Quaternion.Lerp(gunsToRotate.transform.localRotation, rotationCalcGuns, rotationSpeed * Time.deltaTime).eulerAngles;
+        Vector3 endRotationHead = Quaternion.Lerp(baseToRotate.transform.rotation, rotationCalcHead, (rotationSpeed * Time.deltaTime) / 360).eulerAngles;
+        Vector3 endRotationGuns = Quaternion.Lerp(gunsToRotate.transform.localRotation, rotationCalcGuns, (rotationSpeed * Time.deltaTime) / 360).eulerAngles;
         baseToRotate.transform.rotation = Quaternion.Euler(0, endRotationHead.y, 0);
         gunsToRotate.transform.localRotation = Quaternion.Euler(endRotationGuns.x, 0, 0);
 
@@ -113,34 +146,27 @@ public abstract class TurretParent : MonoBehaviour
 
     }
 
-    private void Shoot()
-    {
-        if (target && canShoot)
-        {
-            //Debug.Log("Shooting!");
-            GameObject bulletObject = Instantiate(bulletPrefab, shootPivot.position, shootPivot.rotation);
-            bulletObject.transform.SetParent(ParentReferencer.instance.bulletsParentTransform);
+    #endregion
 
-            BulletParent summonedBullet = bulletObject.GetComponent<BulletParent>();
-            summonedBullet.SetTarget(target.hitPoint.transform);
-            summonedBullet.AddPowerUpValues();
-        }
-    }
-
-    public abstract void AddPowerUpValues();
-
+    #region debugging region
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, range);
 
         Vector3 raycastDir = Vector3.zero;
+        Vector3 raycastDirToShoot = Vector3.zero;
 
         if (target)
         {
             raycastDir = target.hitPoint.position - shootPivot.position;
+            raycastDirToShoot = shootPivot.transform.forward * 100 - shootPivot.position;
+
         }
 
         Gizmos.DrawRay(shootPivot.position, raycastDir * 100);
+        Gizmos.DrawRay(shootPivot.position, raycastDirToShoot);
     }
+
+    #endregion
 }

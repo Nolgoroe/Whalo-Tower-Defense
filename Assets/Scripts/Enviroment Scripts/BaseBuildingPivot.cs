@@ -22,7 +22,6 @@ public class BaseBuildingPivot : MonoBehaviour
             _placementIndicator.SetActive(false);
             CurrentBuilding = building;
             CurrentBuilding.SetParentPivot(transform);
-            CurrentBuilding.OnPlacement();
     }
 
     public void RemoveBuilding()
@@ -44,15 +43,15 @@ public class BaseBuildingPivot : MonoBehaviour
 
         if (CurrentBuilding)
         {
-            ClassRefrencer.instance.UIManager.tempSellRef.gameObject.SetActive(true);
+            ClassRefrencer.instance.UIManager.DisplaySpecificScreensNoDeactivate(new UIScreenTypes[] { UIScreenTypes.ShopSellScreen });
 
-            ClassRefrencer.instance.UIManager.SetShopSellPos(transform);
+            ClassRefrencer.instance.UIManager.SetScreenPos(UIScreenTypes.ShopSellScreen, transform.position);
         }
         else
         {
-            ClassRefrencer.instance.UIManager.tempShopRef.gameObject.SetActive(true);
+            ClassRefrencer.instance.UIManager.DisplaySpecificScreensNoDeactivate(new UIScreenTypes[] { UIScreenTypes.ShopBuyScreen });
 
-            ClassRefrencer.instance.buildManager.PopulateTowerDisplays();
+            ClassRefrencer.instance.UIManager.PopulateTowerDisplays();
         }
 
     }

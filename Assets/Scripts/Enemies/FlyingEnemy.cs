@@ -4,33 +4,10 @@ using UnityEngine;
 
 public class FlyingEnemy : EnemyParent
 {
-
-    public ParticleSystem deathParticle;
-
-    public Rigidbody rigidBody;
-
-    private void Start()
+    #region public functions
+    public override void Start()
     {
-        if (path.Length > 0)
-        {
-            nextTargetPos = path[0];
-        }
-        else
-        {
-            Debug.LogError("No path!");
-        }
-
-        rigidBody = GetComponent<Rigidbody>();
-    }
-
-    private void Update()
-    {
-        if (!IsAlive)
-        {
-            return;
-        }
-
-        Move();
+        base.Start();
     }
     public override void Move()
     {
@@ -45,14 +22,6 @@ public class FlyingEnemy : EnemyParent
             MoveWaypoint();
         }
     }
-
-    private void DoRotation(Vector3 _moveDir)
-    {
-        Quaternion rotate = Quaternion.LookRotation(_moveDir, Vector3.up);
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, rotate, 10);
-    }
-
-    [ContextMenu("take dmg")]
     public override void TakeDamage(float amount)
     {
         health -= amount;
@@ -62,7 +31,7 @@ public class FlyingEnemy : EnemyParent
             OnDeath();
         }
     }
-
+    [ContextMenu("Kill enemy manually")]
     public override void OnDeath()
     {
         anim.SetTrigger("Die");
@@ -75,17 +44,43 @@ public class FlyingEnemy : EnemyParent
         ClassRefrencer.instance.gameManager.playerState.AddScore(scoreToGiveOnDeath);
         ClassRefrencer.instance.gameManager.playerState.AddFunds(fundsToGiveOnDeath);
 
-        ClassRefrencer.instance.enemyManager.allEnemiiesInGame.Remove(this);
+        ClassRefrencer.instance.enemyManager.allEnemiesSpawned.Remove(this);
 
         ClassRefrencer.instance.waveManager.CheckCanAdvanceWave();
 
 
         moveSpeed = 0;
-        //fall down to ground here
 
         rigidBody.useGravity = true;
+        rigidBody.isKinematic = false;
 
-        Destroy(gameObject, 1.2f);
+        CallDeactivateObjectWithDelay();
         Debug.LogError("DEAD!");
     }
+    public override void ResetDataOnSummon()
+    {
+        base.ResetDataOnSummon();
+        rigidBody.useGravity = false;
+        rigidBody.isKinematic = true;
+    }
+
+    #endregion
+
+    #region private functions
+    private void Update()
+    {
+        if (!IsAlive)
+        {
+            return;
+        }
+
+        Move();
+    }
+    private void DoRotation(Vector3 _moveDir)
+    {
+        Quaternion rotate = Quaternion.LookRotation(_moveDir, Vector3.up);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, rotate, 10);
+    }
+
+    #endregion
 }

@@ -17,15 +17,6 @@ public class Board : MonoBehaviour
     [SerializeField]
     private Transform _playerCorePivot = null;
 
-    private Vector3[] ConvertPivotsToPath(Transform[] pivots)
-    {
-        var result = new Vector3[pivots.Length];
-        for (int i = 0; i < pivots.Length; i++)
-        {
-            result[i] = pivots[i].localPosition;
-        }
-        return result;
-    }
 
     public Vector3[] GetGroundPath()
     {
@@ -36,6 +27,15 @@ public class Board : MonoBehaviour
     {
         var randomAirPathPivotsArray = _airPathsPivots[Random.Range(0, _airPathsPivots.Length)];
         return ConvertPivotsToPath(randomAirPathPivotsArray.Pivots);
+    }
+    private Vector3[] ConvertPivotsToPath(Transform[] pivots)
+    {
+        var result = new Vector3[pivots.Length];
+        for (int i = 0; i < pivots.Length; i++)
+        {
+            result[i] = pivots[i].localPosition;
+        }
+        return result;
     }
 
     public Vector3 GetPlayerCorePosition()

@@ -3,7 +3,7 @@
 public class PlayerCore : MonoBehaviour
 {
     [SerializeField]
-    private int _hp = 2000;
+    private int _hp = 200;
 
     [SerializeField]
     private ParticleSystem coreHit;
@@ -31,9 +31,6 @@ public class PlayerCore : MonoBehaviour
 
     private void OnDeath()
     {
-        GameManager.gameRunning = false;
         ClassRefrencer.instance.UIManager.DisplayEndGameScreen();
-        // we need to stop all things here. the game is done!
-        Debug.LogError("DEAD!");
     }
 }

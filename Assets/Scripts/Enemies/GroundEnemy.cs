@@ -4,28 +4,10 @@ using UnityEngine;
 
 public class GroundEnemy : EnemyParent
 {
-    public ParticleSystem deathParticle;
-
-    private void Start()
+    #region public functions
+    public override void Start()
     {
-        if (path.Length > 0)
-        {
-            nextTargetPos = path[0];
-        }
-        else
-        {
-            Debug.LogError("No path!");
-        }
-    }
-
-    private void Update()
-    {
-        if (!IsAlive)
-        {
-            return;
-        }
-
-        Move();
+        base.Start();
     }
     public override void Move()
     {
@@ -40,14 +22,6 @@ public class GroundEnemy : EnemyParent
             MoveWaypoint();
         }
     }
-
-    private void DoRotation(Vector3 _moveDir)
-    {
-        Quaternion rotate = Quaternion.LookRotation(_moveDir, Vector3.up);
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, rotate, 10);
-    }
-
-    [ContextMenu("take dmg")]
     public override void TakeDamage(float amount)
     {
         health -= amount;
@@ -60,6 +34,7 @@ public class GroundEnemy : EnemyParent
         }
     }
 
+    [ContextMenu("Kill enemy manually")]
     public override void OnDeath()
     {
         enemyCollider.enabled = false;
@@ -70,15 +45,40 @@ public class GroundEnemy : EnemyParent
         ClassRefrencer.instance.gameManager.playerState.AddScore(scoreToGiveOnDeath);
         ClassRefrencer.instance.gameManager.playerState.AddFunds(fundsToGiveOnDeath);
 
-        ClassRefrencer.instance.enemyManager.allEnemiiesInGame.Remove(this);
+        ClassRefrencer.instance.enemyManager.allEnemiesSpawned.Remove(this);
 
         ClassRefrencer.instance.waveManager.CheckCanAdvanceWave();
 
 
         moveSpeed = 0;
 
-        Destroy(gameObject, 3);
+        CallDeactivateObjectWithDelay();
+
         Debug.LogError("DEAD!");
     }
 
+    public override void ResetDataOnSummon()
+    {
+        base.ResetDataOnSummon();
+    }
+
+    #endregion
+
+    #region private functions
+    private void Update()
+    {
+        if (!IsAlive)
+        {
+            return;
+        }
+
+        Move();
+    }
+    private void DoRotation(Vector3 _moveDir)
+    {
+        Quaternion rotate = Quaternion.LookRotation(_moveDir, Vector3.up);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, rotate, 10);
+    }
+
+    #endregion
 }

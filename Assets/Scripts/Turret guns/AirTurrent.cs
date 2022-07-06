@@ -8,7 +8,7 @@ public class AirTurrent : TurretParent
     {
         attackSpeed -= ClassRefrencer.instance.powerupManager.airAttackSpeedModifier;
 
-        if(attackSpeed < maxAttackSpeed)
+        if (attackSpeed < maxAttackSpeed)
         {
             attackSpeed = maxAttackSpeed;
         }

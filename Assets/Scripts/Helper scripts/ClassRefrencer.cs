@@ -14,6 +14,7 @@ public class ClassRefrencer : MonoBehaviour
     public Board boardManager;
     public BuildManager buildManager;
     public PowerUpManager powerupManager;
+    public ObjectPoolingManager objectPoolingManager;
 
     private void Awake()
     {

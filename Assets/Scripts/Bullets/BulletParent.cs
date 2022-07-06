@@ -4,18 +4,16 @@ using UnityEngine;
 
 public abstract class BulletParent : MonoBehaviour
 {
-    public Transform targetAttack;
-    public float moveSpeed;
-    public float damageToEnemy;
-
-    public Vector3 bulletDir;
+    [SerializeField] private Transform targetAttack;
+    [SerializeField] internal float moveSpeed;
+    [SerializeField] internal float damageToEnemy;
 
     public float maxMoveSpeed;
 
-    private void Start()
-    {
-        Destroy(gameObject, 10f);
-    }
+    private Vector3 bulletDir;
+
+    #region public functions
+
     public void SetTarget(Transform _targetToAttack)
     {
         targetAttack = _targetToAttack;
@@ -23,11 +21,23 @@ public abstract class BulletParent : MonoBehaviour
         bulletDir = targetAttack.transform.position - transform.position;
     }
 
+
+    public abstract void AddPowerUpValues();
+
+    #endregion
+
+    #region private functions
+    private void OnEnable()
+    {
+        StartCoroutine(DeactivateBulletAfterDelay());
+    }
+
+
     private void Update()
     {
         if(targetAttack == null)
         {
-            Destroy(gameObject);
+            ClassRefrencer.instance.objectPoolingManager.AddObjectBackToQueue(transform.tag, gameObject);
             return;
         }
 
@@ -35,18 +45,24 @@ public abstract class BulletParent : MonoBehaviour
         transform.Translate(bulletDir.normalized * moveSpeed * Time.deltaTime, Space.World);
     }
 
-
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Enemy"))
+        if (other.CompareTag("GroundEnemy") || other.CompareTag("AirEnemy"))
         {
             EnemyParent enemy = other.GetComponent<EnemyParent>();
             enemy.TakeDamage(damageToEnemy);
 
-            Destroy(gameObject);
+            ClassRefrencer.instance.objectPoolingManager.AddObjectBackToQueue(transform.tag, gameObject);
         }
     }
 
+    private IEnumerator DeactivateBulletAfterDelay()
+    {
+        yield return new WaitForSeconds(2);
+        ClassRefrencer.instance.objectPoolingManager.AddObjectBackToQueue(transform.tag, gameObject);
 
-    public abstract void AddPowerUpValues();
+    }
+
+    #endregion
+
 }

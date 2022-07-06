@@ -9,28 +9,36 @@ public enum EnemyTypes
 
 public class EnemyManager : MonoBehaviour
 {
+    [Header("Enemy prefabs")]
     public EnemyParent groundEnemyPrefab;
     public EnemyParent flyingEnemyPrefab;
 
+    [Header("PlayerCore core")]
     public PlayerCore playerCore;
 
-    public List<EnemyParent> allEnemiiesInGame;
+    [Header("Lists")]
+    public List<EnemyParent> allEnemiesSpawned;
 
     public void SpawnEnemy(EnemyTypes enemyType, int _moveSpeed, int _health)
     {
         EnemyParent EP = null;
+        GameObject enemy = null;
 
         switch (enemyType)
         {
             case EnemyTypes.GroundEnemy:
                 Vector3[] groundPath = ClassRefrencer.instance.boardManager.GetGroundPath();
-                EP = Instantiate(groundEnemyPrefab, Vector3.zero, groundEnemyPrefab.transform.rotation, ParentReferencer.instance.enemiesParentTransform).Init(_moveSpeed, _health, groundPath);
-                allEnemiiesInGame.Add(EP);
+                enemy = ClassRefrencer.instance.objectPoolingManager.GetFromPool(groundEnemyPrefab.transform.tag, Vector3.zero, groundEnemyPrefab.transform.rotation);
+                EP = enemy.GetComponent<EnemyParent>();
+                EP.Init(_moveSpeed, _health, groundPath);
+                allEnemiesSpawned.Add(EP);
                 break;
             case EnemyTypes.FlyingEnemy:
                 Vector3[] airPath = ClassRefrencer.instance.boardManager.GetAirPath();
-                EP = Instantiate(flyingEnemyPrefab, Vector3.zero, flyingEnemyPrefab.transform.rotation, ParentReferencer.instance.enemiesParentTransform).Init(_moveSpeed, _health, airPath);
-                allEnemiiesInGame.Add(EP);
+                enemy = ClassRefrencer.instance.objectPoolingManager.GetFromPool(flyingEnemyPrefab.transform.tag, Vector3.zero, flyingEnemyPrefab.transform.rotation);
+                EP = enemy.GetComponent<EnemyParent>();
+                EP.Init(_moveSpeed, _health, airPath);
+                allEnemiesSpawned.Add(EP);
                 break;
             default:
                 break;

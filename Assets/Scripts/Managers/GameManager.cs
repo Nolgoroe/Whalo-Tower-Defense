@@ -24,7 +24,7 @@ public class GameManager : MonoBehaviour
         StartCoroutine(ClassRefrencer.instance.waveManager.CountdownNextWave(ClassRefrencer.instance.waveManager.waveSpawnDelay));
     }
 
-    IEnumerator addScoreAndFunds()
+    private IEnumerator addScoreAndFunds()
     {
         while (gameRunning)
         {
@@ -32,5 +32,10 @@ public class GameManager : MonoBehaviour
             playerState.AddFunds(amontOfFundsPerSec);
             playerState.AddScore(amountOfScorePerSec);
         }
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
     }
 }

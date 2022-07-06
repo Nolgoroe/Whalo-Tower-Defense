@@ -9,51 +9,31 @@ public enum UIScreenTypes
 {
     MainMenuScreen,
     InGameScreen,
-    LoseScreen,
-    SystemMessages,
+    EndGameScreen,
+    ShopBuyScreen,
+    ShopSellScreen
 }
 
 public class UIManager : MonoBehaviour
 {
-    public GameObject[] allScreensInGame; // used to reset all screens to false on start so that we don't accidentaly forget a screen as active.
-
-    public RectTransform tempShopRef;
-    public RectTransform tempSellRef;
-    public RectTransform tempShopRefSub;
-    public RectTransform tempSellRefSub;
-
-    private Dictionary<UIScreenTypes, GameObject> screenTypeToObject;
-    public Vector3 targetOffset;
-
     public static bool isUsingUI;
-    public bool TEMPisUsingUI;
 
+    [Header("Lists")]
+    public GameObject[] allScreensInGame;
+    public SpriteHolder[] allGameSpeedsObjects;
+
+    [Header("Shop Screen data")]
+    public Vector3 targetOffsetForShopScreensHover;
+    public TowerDisplayData towerDisplayPrefab;
+
+    [Header("End screen Data")]
     public Text highScoreText;
 
-    private void Update()
-    {
-        TEMPisUsingUI = isUsingUI;
-    }
 
-    private void Start()
-    {
-        highScoreText.text = "0";
+    private Dictionary<UIScreenTypes, GameObject> screenTypeToObject;
 
-        screenTypeToObject = new Dictionary<UIScreenTypes, GameObject>();
 
-        for (int i = 0; i < allScreensInGame.Length; i++)
-        {
-            screenTypeToObject.Add((UIScreenTypes)i, allScreensInGame[i]);
-        }
-
-        foreach (GameObject screen in allScreensInGame)
-        {
-            screen.SetActive(false);
-        }
-
-        DisplaySpecificScreens(new UIScreenTypes[] { UIScreenTypes.MainMenuScreen });
-    }
-
+    #region public functions
     public void DisplaySpecificScreens(UIScreenTypes[] screens)
     {
         DeactivateAllScreens();
@@ -79,52 +59,86 @@ public class UIManager : MonoBehaviour
             screenTypeToObject[type].SetActive(false);
         }
     }
-
-    public void MoveToGame()
-    {
-        DisplaySpecificScreens(new UIScreenTypes[] { UIScreenTypes.InGameScreen });
-        ClassRefrencer.instance.gameManager.InitGameManagerInGame();
-    }
-
-    public void DisplayEndGameScreen()
-    {
-        DisplaySpecificScreens(new UIScreenTypes[] { UIScreenTypes.LoseScreen });
-
-        UpdateHighScore();
-    }
-
-    //public void DisplaySystemMessages()
-    //{
-    //    DisplaySpecificScreens(new UIScreenTypes[] { UIScreenTypes.SystemMessages, UIScreenTypes.InGameScreen });
-    //}
-
-    public void RestartGameButton()
-    {
-        SceneManager.LoadScene(0);
-    }
-
-    private void DeactivateAllScreens()
+    public void DeactivateAllScreens()
     {
         foreach (GameObject screen in allScreensInGame)
         {
             screen.SetActive(false);
         }
     }
-
-    public void SetShopPos(Transform _targetHoverAbove)
+    public void callSetIsUsingUI(bool _isUsingUI, float _delay)
     {
-        Vector3 pos = Camera.main.WorldToScreenPoint(_targetHoverAbove.position);
-
-        tempShopRefSub.position = pos + targetOffset; /// temp here
+        StartCoroutine(SetIsUsingUI(_isUsingUI, _delay));
     }
-    public void SetShopSellPos(Transform _targetHoverAbove)
+    public void SetScreenPos(UIScreenTypes _screen, Vector3 _pos)
     {
-        Vector3 pos = Camera.main.WorldToScreenPoint(_targetHoverAbove.position);
+        Vector3 pos = Camera.main.WorldToScreenPoint(_pos);
 
-        tempSellRefSub.position = pos + targetOffset; /// temp here
+        screenTypeToObject[_screen].transform.position = pos + targetOffsetForShopScreensHover;
+    }
+    public void DisplayEndGameScreen()
+    {
+        UpdateHighScore();
+
+        DisplaySpecificScreensNoDeactivate(new UIScreenTypes[] { UIScreenTypes.EndGameScreen });
+
+        Time.timeScale = 0;
+        GameManager.gameRunning = false;
+    }
+    public void DisplayGameSpeedSprite(int _amount)
+    {
+        foreach (SpriteHolder spriteHolder in allGameSpeedsObjects)
+        {
+            spriteHolder.SetDeactivated();
+        }
+
+        allGameSpeedsObjects[_amount - 1].SetActivated();
+    }
+    public void PopulateTowerDisplays()
+    {
+        BaseBuilding[] alltowers = ClassRefrencer.instance.buildManager.allTowersInGame;
+
+        foreach (Transform child in ParentReferencer.instance.towerDisplayDataParent)
+        {
+            Destroy(child.gameObject);
+        }
+
+        for (int i = 0; i < alltowers.Length; i++)
+        {
+            TowerDisplayData display = Instantiate(towerDisplayPrefab, ParentReferencer.instance.towerDisplayDataParent);
+            display.SetData(i, alltowers[i].towerName, alltowers[i].BuildCost.ToString(), alltowers[i].UIIcon, alltowers[i]);
+        }
+
+        ClassRefrencer.instance.UIManager.SetScreenPos(UIScreenTypes.ShopBuyScreen, ClassRefrencer.instance.buildManager.buildingPivotClicked.transform.position);
     }
 
-    public void UpdateHighScore()
+    #endregion
+
+    #region private functions
+    private void Start()
+    {
+        highScoreText.text = "0";
+
+        screenTypeToObject = new Dictionary<UIScreenTypes, GameObject>();
+
+        for (int i = 0; i < allScreensInGame.Length; i++)
+        {
+            screenTypeToObject.Add((UIScreenTypes)i, allScreensInGame[i]);
+            allScreensInGame[i].SetActive(false);
+        }
+
+        DisplaySpecificScreens(new UIScreenTypes[] { UIScreenTypes.MainMenuScreen });
+    }
+    private void SetScorePlayerPrefs(string KeyName, int Value)
+    {
+        PlayerPrefs.SetInt(KeyName, Value);
+    }
+
+    private int GetSetScorePlayerPrefs(string KeyName)
+    {
+        return PlayerPrefs.GetInt(KeyName);
+    }
+    private void UpdateHighScore()
     {
         int highestScoreReached = 0;
 
@@ -137,7 +151,7 @@ public class UIManager : MonoBehaviour
             SetScorePlayerPrefs("ScoreSaved", ClassRefrencer.instance.gameManager.playerState.Score);
         }
 
-        if(ClassRefrencer.instance.gameManager.playerState.Score > highestScoreReached)
+        if (ClassRefrencer.instance.gameManager.playerState.Score > highestScoreReached)
         {
             highScoreText.text = ClassRefrencer.instance.gameManager.playerState.Score.ToString();
 
@@ -149,26 +163,30 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    #endregion
 
-    public void SetScorePlayerPrefs(string KeyName, int Value)
+    #region button Functions
+    public void RestartGameButton()
     {
-        PlayerPrefs.SetInt(KeyName, Value);
+        Time.timeScale = 1;
+
+        SceneManager.LoadScene(0);
+    }
+    public void MoveToGameButton()
+    {
+        DisplaySpecificScreens(new UIScreenTypes[] { UIScreenTypes.InGameScreen });
+        ClassRefrencer.instance.gameManager.InitGameManagerInGame();
     }
 
-    public int GetSetScorePlayerPrefs(string KeyName)
-    {
-        return PlayerPrefs.GetInt(KeyName);
-    }
+    #endregion
 
-    public void callSetIsUsingUI(bool _isUsingUI, float _delay)
-    {
-        StartCoroutine(SetIsUsingUI(_isUsingUI, _delay));
-    }
-
+    #region static functions
     public static IEnumerator SetIsUsingUI(bool _isUsingUI, float _delay)
     {
         yield return new WaitForSeconds(_delay);
 
         isUsingUI = _isUsingUI;
     }
+
+    #endregion
 }

@@ -5,13 +5,18 @@ using UnityEngine.UI;
 
 public class TowerDisplayData : MonoBehaviour
 {
+    [Header("General data")]
     public int indexInAllTowersArray;
 
-    public Text towerNameText, towerCostText;
-    public Image towerImage;
+    [Header("Texts")]
+    public Text towerNameText;
+    public Text towerCostText;
 
+    [Header("Prefabs")]
     public BaseBuilding towerPrefab;
 
+    [Header("Connected componenets")]
+    public Image towerImage;
     public Button connectedButton;
 
     public void SetData(int _indexInAllTowersArray ,string _towerName, string _towerCost, Sprite _towerSprite, BaseBuilding _towerToSummon)
@@ -19,7 +24,7 @@ public class TowerDisplayData : MonoBehaviour
         indexInAllTowersArray = _indexInAllTowersArray;
 
         towerNameText.text = _towerName;
-        towerCostText.text = _towerName;
+        towerCostText.text = _towerCost + "$";
 
         towerImage.sprite = _towerSprite;
 

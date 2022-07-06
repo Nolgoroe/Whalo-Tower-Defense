@@ -4,12 +4,6 @@ using UnityEngine;
 
 public class WaveManager : MonoBehaviour
 {
-
-
-
-    //[Header("Waves scriptable Objects")]
-    //public WaveScriptableObject[] allWaves;
-
     [Header("General wave data")]
     public int waveSpawnDelay;
     public int timeDelaySpawnEnemy;
@@ -43,7 +37,7 @@ public class WaveManager : MonoBehaviour
     public int flyingEnemiesSpawned;
     public bool doneSpawning;
 
-
+    #region public functions
     public IEnumerator CountdownNextWave(int spawnDelay)
     {
         while (spawnDelay > 0)
@@ -58,7 +52,19 @@ public class WaveManager : MonoBehaviour
 
         StartCoroutine(SpawnWave(currentWaveID));
     }
+    public void CheckCanAdvanceWave()
+    {
+        if (doneSpawning && ClassRefrencer.instance.enemyManager.allEnemiesSpawned.Count <= 0)
+        {
+            SetDataNextWave();
 
+            StartCoroutine(AdvanceToNextWave());
+        }
+    }
+
+    #endregion
+
+    #region private functions
     private IEnumerator SpawnWave(int waveID)
     {
         while (groundEnemiesSpawned + flyingEnemiesSpawned < groundEnemiesToSpawnThisWave + flyingEnemiesToSpawnThisWave)
@@ -72,14 +78,13 @@ public class WaveManager : MonoBehaviour
 
         CheckCanAdvanceWave();
     }
-
     private void ChooseEnemyToSpawn()
     {
-        if(!hasFinishedSummoningFlying && !hasFinishedSummoningGround)
+        if (!hasFinishedSummoningFlying && !hasFinishedSummoningGround)
         {
             int random = Random.Range(0, 2);
 
-            if(random == 1)
+            if (random == 1)
             {
                 SpawnGroundEnemy();
             }
@@ -103,7 +108,6 @@ public class WaveManager : MonoBehaviour
             return;
         }
     }
-
     private void SpawnGroundEnemy()
     {
         groundEnemiesSpawned++;
@@ -119,44 +123,23 @@ public class WaveManager : MonoBehaviour
     {
         flyingEnemiesSpawned++;
 
-        if(flyingEnemiesSpawned >= flyingEnemiesToSpawnThisWave)
+        if (flyingEnemiesSpawned >= flyingEnemiesToSpawnThisWave)
         {
             hasFinishedSummoningFlying = true;
         }
 
         ClassRefrencer.instance.enemyManager.SpawnEnemy(EnemyTypes.FlyingEnemy, flyingEnemySpeed, flyingEnemyHealth);
     }
-
-
-    [ContextMenu("CheckCanAdvanceWave")]
-    public void CheckCanAdvanceWave()
-    {
-        if(doneSpawning && ClassRefrencer.instance.enemyManager.allEnemiiesInGame.Count <= 0)
-        {
-            SetDataNextWave();
-
-            StartCoroutine(AdvanceToNextWave());
-        }
-    }
-
     private void SetDataNextWave()
     {
-        groundEnemiesSpawned = 0;
-        flyingEnemiesSpawned = 0;
-
-        ClassRefrencer.instance.enemyManager.allEnemiiesInGame.Clear();
-
-        doneSpawning = false;
-        hasFinishedSummoningGround = false;
-
+        ResetWaveData();
 
         groundEnemiesToSpawnThisWave += addAmountGroundEnemies;
         groundEnemySpeed += addSpeedGroundEnemies;
         groundEnemyHealth += addHealthGroundEnemies;
         currentWaveID++;
 
-
-        if(currentWaveID >= waveNumAddFlyingEnemies)
+        if (currentWaveID >= waveNumAddFlyingEnemies)
         {
             hasFinishedSummoningFlying = false;
 
@@ -170,15 +153,25 @@ public class WaveManager : MonoBehaviour
         }
     }
 
+    private void ResetWaveData()
+    {
+        ClassRefrencer.instance.enemyManager.allEnemiesSpawned.Clear();
+
+        groundEnemiesSpawned = 0;
+        flyingEnemiesSpawned = 0;
+
+        doneSpawning = false;
+        hasFinishedSummoningGround = false;
+    }
+
     private IEnumerator AdvanceToNextWave()
     {
-        //ClassRefrencer.instance.UIManager.DisplaySystemMessages();
-        ClassRefrencer.instance.announcementManager.Show("Wave Ended!", 1, ClassRefrencer.instance.announcementManager._generalText);
+        ClassRefrencer.instance.announcementManager.Show("Wave Ended!", 2, ClassRefrencer.instance.announcementManager._generalText);
 
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(2.5f);
 
         StartCoroutine(CountdownNextWave(waveSpawnDelay));
-
-        Debug.LogError("done with coroutine");
     }
+
+    #endregion
 }

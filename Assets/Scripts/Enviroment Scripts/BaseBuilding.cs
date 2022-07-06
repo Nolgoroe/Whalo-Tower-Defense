@@ -17,16 +17,12 @@ public class BaseBuilding : MonoBehaviour
 
     public int BuildCost => _buildCost;
 
-    public bool IsPlaced { get; protected set; }
-
     public void SetParentPivot(Transform pivotTransform)
     {
         transform.SetParent(pivotTransform);
         transform.localPosition = Vector3.zero;
         transform.localRotation = Quaternion.identity;
     }
-
-    public virtual void OnPlacement() { IsPlaced = true; }
 
     public virtual void OnRemoval() { Destroy(gameObject); }
 }
